@@ -27,42 +27,42 @@ const verifyJWT = (req, res, next) => {
 
 // GET all images
 router.get('/',
-  verifyJWT(),
+  verifyJWT,
   (req, res, next) =>
     controller.findAll(req, res, next)
 )
 
 // POST a new image
 router.post('/',
-  verifyJWT(),
+  verifyJWT,
   (req, res, next) =>
     controller.create(req, res, next)
 )
 
 // GET a specific image
 router.get('/:id',
-  verifyJWT(),
+  verifyJWT,
   (req, res, next) =>
     controller.find(req, res, next)
 )
 
 // PUT update an image
 router.put('/',
-  verifyJWT(),
+  verifyJWT,
   (req, res, next) =>
     controller.replace(req, res, next)
 )
 
 // PATCH partially update an image
 router.patch('/',
-  verifyJWT(),
+  verifyJWT,
   (req, res, next) =>
     controller.modify(req, res, next)
 )
 
 // DELETE a specific image
 router.delete('/',
-  verifyJWT(),
+  verifyJWT,
   (req, res, next) =>
     controller.delete(req, res, next)
 )
