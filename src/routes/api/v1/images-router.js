@@ -5,12 +5,17 @@
  * @version 1.0.0
  */
 import express from 'express'
+import createHttpError from 'http-errors'
+import jwt from 'jsonwebtoken'
 import { ImagesController } from '../../../controllers/api/images-controller.js'
 
 export const router = express.Router()
 
 const controller = new ImagesController()
 
+//
+// ///////////////// HELPERS /////////////////
+//
 /**
  * Request authentication.
  *
@@ -19,11 +24,39 @@ const controller = new ImagesController()
  * @param {Function} next - Express next-middleware function.
  */
 const verifyJWT = (req, res, next) => {
-  // TODO: Check bearer token
-  // TODO: Try verifying token
+  // Check bearer token
+  const authorization = req.headers.authorization?.split(' ')
+
+  if (authorization?.[0] !== 'Bearer') {
+    next(createHttpError(401))
+    return
+  }
+
+  // Verify JWT
+  try {
+    const base64 = process.env.PUBLIC_KEY
+
+    const publicKey = Buffer.from(base64, 'base64')
+
+    const payload = jwt.verify(authorization[1], publicKey)
+
+    req.email = {
+      email: payload.email
+    }
+
+    next()
+  } catch (error) {
+    next(createHttpError(403))
+  }
 }
 
-// TODO: Load image for id param
+//
+// ///////////////// ROUTES /////////////////
+//
+
+// Make image available in the request-object
+// if id parameter is present.
+router.param('id', (req, res, next, id) => controller.loadImage(req, res, next, id))
 
 // GET all images
 router.get('/',

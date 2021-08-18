@@ -12,7 +12,7 @@ import { Image } from '../../models/image.js'
  */
 export class ImagesController {
   /**
-   * Find all images.
+   * Load image to the request object.
    *
    * @param {object} req - Express request object.
    * @param {object} res - Express response object.
@@ -23,6 +23,13 @@ export class ImagesController {
     try {
       //
       const image = await Image.getById(id)
+
+      if (!image) {
+        next(createHttpError(404, 'Not Found'))
+        return
+      }
+
+      req.image = image
 
       next()
     } catch (error) {
@@ -39,7 +46,12 @@ export class ImagesController {
    */
   async findAll (req, res, next) {
     try {
-      //
+      const mess = {
+        mess: 'Found them all!'
+      }
+      res
+        .status(200)
+        .json(mess)
     } catch (error) {
       next(error)
     }
@@ -55,18 +67,14 @@ export class ImagesController {
   async create (req, res, next) {}
 
   /**
-   * Find one image.
+   * Send back image as json.
    *
    * @param {object} req - Express request object.
    * @param {object} res - Express response object.
    * @param {Function} next - Express next-middleware function.
    */
   async find (req, res, next) {
-    try {
-      //
-    } catch (error) {
-      next(error)
-    }
+    res.json(req.image)
   }
 
   /**

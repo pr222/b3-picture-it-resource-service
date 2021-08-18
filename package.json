@@ -25,7 +25,8 @@
     "http-errors": "^1.7.2",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.13.5",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "validator": "^13.6.0"
   },
   "devDependencies": {
     "@lnu/eslint-config": "^1.1.3",
