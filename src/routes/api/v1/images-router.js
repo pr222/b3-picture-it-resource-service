@@ -28,7 +28,7 @@ const verifyJWT = (req, res, next) => {
   const authorization = req.headers.authorization?.split(' ')
 
   if (authorization?.[0] !== 'Bearer') {
-    next(createHttpError(401))
+    next(createHttpError(401, 'Bearer token is missing'))
     return
   }
 
@@ -46,7 +46,7 @@ const verifyJWT = (req, res, next) => {
 
     next()
   } catch (error) {
-    next(createHttpError(403))
+    next(createHttpError(403, 'JWT Validation failed'))
   }
 }
 
@@ -80,21 +80,21 @@ router.get('/:id',
 )
 
 // PUT update an image
-router.put('/',
+router.put('/:id',
   verifyJWT,
   (req, res, next) =>
     controller.replace(req, res, next)
 )
 
 // PATCH partially update an image
-router.patch('/',
+router.patch('/:id',
   verifyJWT,
   (req, res, next) =>
     controller.modify(req, res, next)
 )
 
 // DELETE a specific image
-router.delete('/',
+router.delete('/:id',
   verifyJWT,
   (req, res, next) =>
     controller.delete(req, res, next)

@@ -22,6 +22,11 @@ const ImageSchema = new mongoose.Schema({
   location: {
     type: String,
     trim: true
+  },
+  imgId: {
+    type: String,
+    required: true,
+    unique: true
   }
 }, {
   timestamps: true,
@@ -35,13 +40,14 @@ const ImageSchema = new mongoose.Schema({
      */
     transform: function (mongooseDoc, representation) {
       delete representation._id
+      delete representation.imgId
     },
     virtuals: true
   }
 })
 
 ImageSchema.virtual('id').get(function () {
-  return this._id.toHexString()
+  return this.imgId
 })
 
 /**
@@ -60,7 +66,7 @@ ImageSchema.statics.getAll = async function () {
  * @returns {Promise<Image>} Promise of an image.
  */
 ImageSchema.statics.getById = async function (id) {
-  return this.findOne({ _id: id })
+  return this.findOne({ imgId: id })
 }
 
 /**
