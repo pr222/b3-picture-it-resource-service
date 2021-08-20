@@ -6,7 +6,6 @@
  */
 import fetch from 'node-fetch'
 import createHttpError from 'http-errors'
-import validator from 'validator'
 import { Image } from '../../models/image.js'
 
 /**
@@ -64,13 +63,6 @@ export class ImagesController {
    */
   async create (req, res, next) {
     try {
-      const validEncoding = validator.isBase64(req.body.data)
-
-      if (!validEncoding) {
-        next(createHttpError(400))
-        return
-      }
-
       // Prepare for Image-service
       const imageDataToPost = {
         data: req.body.data,
@@ -129,10 +121,37 @@ export class ImagesController {
    */
   async replace (req, res, next) {
     try {
-      // TODO: Update image to image service
-      // TODO: Update metadata in DB for latest updated at
+      // Prepare for Image-service
+      const imageDataToPost = {
+        data: req.body.data,
+        contentType: req.body.contentType
+      }
 
-      // res.status(204).json(metadata)
+      const response = await fetch(`${process.env.IMAGE_API_URL}/${req.image.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'PRIVATE-TOKEN': `${process.env.IMAGE_ACCESS_TOKEN}`
+        },
+        body: `${JSON.stringify(imageDataToPost)}`
+      })
+
+      if (response.status !== 204) {
+        next(createHttpError(500))
+        return
+      }
+
+      const metaData = {
+        description: req.body.description,
+        location: req.body.location
+      }
+
+      // Save latest meta data to DB
+      await req.image.update(metaData)
+
+      res
+        .status(204)
+        .end()
     } catch (error) {
       next(error)
     }
@@ -182,7 +201,7 @@ export class ImagesController {
       await req.image.delete()
 
       res
-        .status(204, 'Image deleted')
+        .status(204)
         .end()
     } catch (error) {
       next(error)

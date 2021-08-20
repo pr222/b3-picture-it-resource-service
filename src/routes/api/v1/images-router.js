@@ -7,6 +7,7 @@
 import express from 'express'
 import createHttpError from 'http-errors'
 import jwt from 'jsonwebtoken'
+import validator from 'validator'
 import { ImagesController } from '../../../controllers/api/images-controller.js'
 
 export const router = express.Router()
@@ -50,6 +51,24 @@ const verifyJWT = (req, res, next) => {
   }
 }
 
+/**
+ * Validate Base64-encoding.
+ *
+ * @param {object} req - Express request object.
+ * @param {object} res - Express response object.
+ * @param {Function} next - Express next-middleware function.
+ */
+const validateBase64 = (req, res, next) => {
+  const validEncoding = validator.isBase64(req.body.data)
+
+  if (!validEncoding) {
+    next(createHttpError(400))
+    return
+  }
+
+  next()
+}
+
 //
 // ///////////////// ROUTES /////////////////
 //
@@ -68,6 +87,7 @@ router.get('/',
 // POST a new image
 router.post('/',
   verifyJWT,
+  validateBase64,
   (req, res, next) =>
     controller.create(req, res, next)
 )
@@ -82,6 +102,7 @@ router.get('/:id',
 // PUT update an image
 router.put('/:id',
   verifyJWT,
+  validateBase64,
   (req, res, next) =>
     controller.replace(req, res, next)
 )
