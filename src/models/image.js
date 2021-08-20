@@ -46,6 +46,7 @@ const ImageSchema = new mongoose.Schema({
   }
 })
 
+// Only expose the image id from Image service.
 ImageSchema.virtual('id').get(function () {
   return this.imgId
 })

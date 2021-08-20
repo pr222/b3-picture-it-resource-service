@@ -39,7 +39,7 @@ export class ImagesController {
   }
 
   /**
-   * Find all images.
+   * Find and send array with all images meta data.
    *
    * @param {object} req - Express request object.
    * @param {object} res - Express response object.
@@ -47,12 +47,9 @@ export class ImagesController {
    */
   async findAll (req, res, next) {
     try {
-      // TODO: Send array with all metadata-images
-      const mess = {
-        mess: 'Found them all!'
-      }
-      res
-        .json(mess)
+      const images = await Image.getAll()
+
+      res.json(images)
     } catch (error) {
       next(error)
     }
@@ -67,15 +64,14 @@ export class ImagesController {
    */
   async create (req, res, next) {
     try {
-      // TODO: Take req-payload, send to Image-service
-      // Validate req image?
       const validEncoding = validator.isBase64(req.body.data)
-      console.log(validEncoding)
+
       if (!validEncoding) {
         next(createHttpError(400))
         return
       }
 
+      // Prepare for Image-service
       const imageDataToPost = {
         data: req.body.data,
         contentType: req.body.contentType
@@ -94,10 +90,10 @@ export class ImagesController {
         next(createHttpError(500))
         return
       }
-      // TODO: Create and add new to DB
-      const responseImage = await response.json()
-      console.log(responseImage)
 
+      const responseImage = await response.json()
+
+      // Save meta-data to the resource database
       const metaData = await Image.add({
         imageUrl: responseImage.imageUrl,
         description: req.body.description,
