@@ -113,7 +113,7 @@ export class ImagesController {
   }
 
   /**
-   * Update an image replacing it.
+   * Update an image replacing it in Image-service and meta data to DB.
    *
    * @param {object} req - Express request object.
    * @param {object} res - Express response object.
@@ -166,9 +166,17 @@ export class ImagesController {
    */
   async modify (req, res, next) {
     try {
-      // TODO: await Update model
+      const metaData = {
+        description: req.body.description,
+        location: req.body.location
+      }
 
-      // res.status(204) // partially updated
+      // Save latest meta data to DB
+      await req.image.update(metaData)
+
+      res
+        .status(204)
+        .end()
     } catch (error) {
       next(error)
     }
