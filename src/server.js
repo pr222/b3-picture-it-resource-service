@@ -6,6 +6,7 @@
  */
 import express from 'express'
 import helmet from 'helmet'
+import cors from 'cors'
 import logger from 'morgan'
 import { router } from './routes/router.js'
 import { connectDB } from './config/mongoose.js'
@@ -24,6 +25,10 @@ const main = async () => {
 
   // Set HTTP-headers for more security.
   app.use(helmet())
+
+  // Add cors for all origins.
+  // Default allowed methods: GET,HEAD,PUT,PATCH,POST,DELETE
+  app.use(cors())
 
   // Set parsing of application/json.
   app.use(express.json({ limit: '500kb' }))
