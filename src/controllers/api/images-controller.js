@@ -164,13 +164,25 @@ export class ImagesController {
    */
   async delete (req, res, next) {
     try {
-      //
-      // TODO: Delete in Image-service
-      // TODO: Delete from DB
-      //
+      // Delete in Image-service.
+      const response = await fetch(`${process.env.IMAGE_API_URL}/${req.image.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'PRIVATE-TOKEN': `${process.env.IMAGE_ACCESS_TOKEN}`
+        }
+      })
+
+      if (response.status !== 204) {
+        next(createHttpError(500))
+        return
+      }
+
+      // Delete the image meta data from DB.
+      await req.image.delete()
 
       res
-        .status(204)
+        .status(204, 'Image deleted')
         .end()
     } catch (error) {
       next(error)
