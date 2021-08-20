@@ -56,7 +56,7 @@ export class ImagesController {
   }
 
   /**
-   * Create a new image.
+   * Create a new image and save it to the Image-service.
    *
    * @param {object} req - Express request object.
    * @param {object} res - Express response object.
@@ -110,18 +110,14 @@ export class ImagesController {
   }
 
   /**
-   * Send back image as json.
+   * Send back image that is already loaded to the req-object.
    *
    * @param {object} req - Express request object.
    * @param {object} res - Express response object.
    * @param {Function} next - Express next-middleware function.
    */
   async find (req, res, next) {
-    // TODO: const image-object with
-    // createdAt, updatedAt and id
-
-    res
-      .json(req.image)
+    res.json(req.image)
   }
 
   /**
